@@ -1,16 +1,19 @@
 # Các lệnh hay dùng
 
-| Mục | Mô tả |
-|---|---|
-| [chmod](#chmod) | Thay đổi quyền truy cập cho file/thư mục |
-| [find](#find) | Tìm kiếm file trong hệ thống |
-| [grep](#grep) | Tìm kiếm mẫu cụ thể trong file hoặc đầu ra lệnh |
-| [nano](#nano) | Tạo và chỉnh sửa file văn bản |
-| [wget](#wget) | Tải file từ internet |
-| [scp](#scp) | Sao chép file an toàn giữa hai máy tính |
-| [HTTPServer](#httpserver) | Tạo máy chủ web đơn giản |
-| [Crontab](#crontab) | Lập lịch tác vụ định kỳ |
-| [sqlite3](#sqlite3) | Tương tác với cơ sở dữ liệu SQLite |
+
+| **Mục** | **Mô tả** | **Cờ/Tùy chọn Quan trọng** | **Ví dụ Sử dụng** |
+|---|---|---|---|
+| [**chmod**](#chmod) | Thay đổi quyền truy cập cho file/thư mục | `+x` (thêm quyền thực thi), `-r` (gỡ quyền đọc), `+w` (thêm quyền ghi) | `chmod +x file.sh` (Thêm quyền thực thi cho file.sh) |
+| [**find**](#find) | Tìm kiếm file trong hệ thống | `-name` (tìm theo tên), `-type` (loại tệp), `-size` (kích thước tệp) | `find / -name "*.txt"` (Tìm tất cả các file .txt trong hệ thống) |
+| [**grep**](#grep) | Tìm kiếm mẫu cụ thể trong file hoặc đầu ra lệnh | `-i` (không phân biệt hoa/thường), `-r` (tìm kiếm đệ quy), `-v` (lọc mẫu không khớp) | `grep -i "error" log.txt` (Tìm từ "error" trong file log.txt, không phân biệt hoa/thường) |
+| [**nano**](#nano) | Tạo và chỉnh sửa file văn bản | `Ctrl+O` (lưu file), `Ctrl+X` (thoát nano) | `nano myfile.txt` (Mở file myfile.txt để chỉnh sửa) |
+| [**wget**](#wget) | Tải file từ internet | `-O` (đặt tên file), `-c` (tiếp tục tải nếu bị gián đoạn) | `wget -O myfile.zip http://example.com/file.zip` (Tải file và lưu tên là myfile.zip) |
+| [**scp**](#scp) | Sao chép file an toàn giữa hai máy tính | `-r` (sao chép thư mục đệ quy), `-P` (chỉ định cổng SSH) | `scp file.txt user@remote:/path/to/destination` (Sao chép file.txt từ máy cục bộ đến máy từ xa) |
+| [**HTTPServer**](#httpserver) | Tạo máy chủ web đơn giản | `-p` (chỉ định cổng) | `python3 -m http.server 8080` (Tạo máy chủ HTTP trên cổng 8080) |
+| [**Crontab**](#crontab) | Lập lịch tác vụ định kỳ | `-e` (chỉnh sửa lịch cron), `-l` (liệt kê lịch cron) | `crontab -e` (Mở crontab để chỉnh sửa lịch trình) |
+| [**sqlite3**](#sqlite3) | Tương tác với cơ sở dữ liệu SQLite | `.tables` (hiển thị các bảng), `.schema` (xem cấu trúc bảng) | `sqlite3 mydb.db` (Mở cơ sở dữ liệu SQLite có tên mydb.db) |
+| [**LinEnum**](#linenum) | Công cụ kiểm tra quyền và cấu hình bảo mật trên hệ thống Linux | Không có cờ đặc biệt, chạy với quyền root để có kết quả đầy đủ | `./LinEnum.sh` (Chạy script LinEnum để thu thập thông tin hệ thống) |
+
 
 ## chmod
     Mục đích: Đặt quyền truy cập cho file/thư mục (ai được đọc/ghi/thực thi).
@@ -245,3 +248,69 @@ Chúng ta có thể thấy từ thông tin bảng rằng có bốn cột: `custI
 `0|Joy Paulson|4916 9012 2231 7905|5f4dcc3b5aa765d61d8327deb882cf99`
 
 Chúng ta có `custID` (0), `custName` (Joy Paulson), `creditCard` (4916 9012 2231 7905) và băm mật khẩu (5f4dcc3b5aa765d61d8327deb882cf99).
+
+
+
+## LinEnum
+LinEnum là một công cụ tự động hóa quá trình thu thập thông tin và kiểm tra hệ thống **Linux** để tìm kiếm các điểm yếu hoặc cơ hội leo thang đặc quyền. Đây là một công cụ mạnh mẽ giúp kiểm tra nhiều khía cạnh bảo mật của hệ thống như quyền truy cập tệp, dịch vụ đang chạy, và cấu hình hệ thống.
+
+### **Chức năng của LinEnum**
+
+LinEnum sẽ thu thập và liệt kê các thông tin bảo mật quan trọng của hệ thống như:
+- **Kiểm tra quyền truy cập SUID/SGID**: Xác định các tệp có quyền SUID/SGID có thể sử dụng để leo thang đặc quyền.
+- **Kiểm tra dịch vụ đang chạy**: Xác định các dịch vụ nào đang chạy với quyền root hoặc người dùng khác có đặc quyền.
+- **Kiểm tra cấu hình SSH**: Tìm các cấu hình SSH yếu như việc cho phép đăng nhập bằng root.
+- **Kiểm tra các tác vụ cron**: Xác định các tác vụ định kỳ có thể bị khai thác.
+- **Kiểm tra quyền trên các tệp nhạy cảm**: Ví dụ như `/etc/passwd`, `/etc/shadow`.
+
+### **Cách sử dụng LinEnum**
+
+1. **Tải xuống LinEnum**: 
+   Nếu bạn chưa có công cụ này, bạn có thể tải xuống từ GitHub:
+   ```bash
+   wget https://github.com/rebootuser/LinEnum/blob/master/LinEnum.sh
+   ```
+
+2. **Cấp quyền thực thi cho LinEnum**:
+   Trước khi chạy, bạn cần cấp quyền thực thi cho tệp script:
+   ```bash
+   chmod +x LinEnum.sh
+   ```
+
+3. **Chạy LinEnum**:
+   Chạy công cụ LinEnum với quyền root để có thể thu thập đầy đủ thông tin hệ thống:
+   ```bash
+   ./LinEnum.sh
+   ```
+
+   Bạn cũng có thể lưu kết quả kiểm tra vào một tệp:
+   ```bash
+   ./LinEnum.sh > output.txt
+   ```
+
+### **Các tùy chọn quan trọng của LinEnum**
+Mặc dù LinEnum có thể chạy mà không cần thêm tùy chọn nào, dưới đây là một số cờ bạn có thể sử dụng để điều chỉnh quá trình kiểm tra:
+- **-r**: Chạy kiểm tra toàn diện và ghi kết quả.
+   ```bash
+   ./LinEnum.sh -r
+   ```
+- **-e**: Kiểm tra đầy đủ về các thông tin bảo mật như quyền truy cập tệp và dịch vụ.
+   ```bash
+   ./LinEnum.sh -e
+   ```
+
+### **Ví dụ kết quả của LinEnum**
+Dưới đây là một ví dụ về đầu ra của LinEnum khi chạy kiểm tra các tệp SUID/SGID trên hệ thống:
+```bash
+#######################
+# SUID/SGID Files #
+#######################
+
+[-] SUID files:
+-rwsr-xr-x 1 root root 28760 Oct 24 18:21 /usr/bin/passwd
+-rwsr-xr-x 1 root root 164200 May 10 21:21 /usr/bin/sudo
+-rwsr-xr-x 1 root root 47256 Jun 11  2014 /usr/bin/chsh
+```
+
+Ngoài ra, LinEnum có thể cung cấp các thông tin về các tác vụ cron, quyền truy cập tệp nhạy cảm, và nhiều thông tin hữu ích khác giúp bạn xác định được các lỗ hổng bảo mật trong hệ thống.
+
