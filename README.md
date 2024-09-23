@@ -14,6 +14,7 @@
 | [**sqlite3**](#sqlite3) | Tương tác với cơ sở dữ liệu SQLite | `.tables` (hiển thị các bảng), `.schema` (xem cấu trúc bảng) | `sqlite3 mydb.db` (Mở cơ sở dữ liệu SQLite có tên mydb.db) |
 | [**LinEnum**](#linenum) | Công cụ kiểm tra quyền và cấu hình bảo mật trên hệ thống Linux | Không có cờ đặc biệt, chạy với quyền root để có kết quả đầy đủ | `./LinEnum.sh` (Chạy script LinEnum để thu thập thông tin hệ thống) |
 | [**Hydra**](#hydra) | Công cụ brute-force dùng để tấn công mật khẩu dịch vụ từ xa | `-l` (tên người dùng), `-P` (wordlist mật khẩu), `-t` (số luồng), `-s` (cổng) | `hydra -l admin -P passwords.txt ssh://10.10.10.10` (Brute-force dịch vụ SSH với người dùng "admin" và wordlist mật khẩu) |
+| [**John**](#John) |  |  |  |
 
 ## chmod
     Mục đích: Đặt quyền truy cập cho file/thư mục (ai được đọc/ghi/thực thi).
@@ -388,3 +389,138 @@ Dưới đây là kết quả khi brute-force thành công một dịch vụ SSH
 [22][ssh] host: 10.10.10.10   login: admin   password: password123
 ```
 Kết quả này cho thấy Hydra đã tìm thấy tài khoản hợp lệ với tên người dùng **admin** và mật khẩu **password123** cho dịch vụ SSH.
+
+Dưới đây là bản hoàn thiện chuyên nghiệp và chi tiết cho mục **John the Ripper** trong tài liệu của bạn:
+
+---
+
+## John the Ripper
+
+**John the Ripper** là một trong những công cụ crack mật khẩu phổ biến nhất hiện nay, nổi tiếng với khả năng crack các loại hash một cách nhanh chóng và hiệu quả. John hỗ trợ nhiều định dạng hash và có khả năng tùy chỉnh cao, là một công cụ mạnh mẽ trong các cuộc kiểm tra bảo mật và kiểm tra mật khẩu.
+
+### Cài đặt John the Ripper
+
+#### **Trên Linux**:
+Cài đặt John the Ripper trên các hệ điều hành Linux rất đơn giản bằng cách sử dụng lệnh **apt**:
+```bash
+sudo apt install john
+```
+
+#### **Trên Windows**:
+Để cài đặt **Jumbo John the Ripper** trên Windows, bạn có thể tải xuống và cài đặt tệp nhị phân nén:
+- **64-bit**: [Tải về tại đây](https://www.openwall.com/john/k/john-1.9.0-jumbo-1-win64.zip)
+- **32-bit**: [Tải về tại đây](https://www.openwall.com/john/k/john-1.9.0-jumbo-1-win32.zip)
+
+Sau khi tải xuống, giải nén và thêm thư mục chứa tệp thực thi vào **PATH** của hệ thống để có thể sử dụng John từ dòng lệnh.
+
+---
+
+### Cú pháp cơ bản của John
+John the Ripper có cú pháp cơ bản như sau:
+```
+john [tùy chọn] [đường dẫn đến tệp hash]
+```
+
+Ví dụ, để bẻ khóa một tệp hash với danh sách từ đã biết:
+```bash
+john --wordlist=/usr/share/wordlists/rockyou.txt hash_to_crack.txt
+```
+
+---
+
+### **Bẻ khóa tự động**
+Bạn có thể sử dụng John the Ripper với chế độ bẻ khóa tự động bằng cách chỉ định một wordlist (danh sách từ mật khẩu) và tệp hash cần bẻ khóa:
+
+```bash
+john --wordlist=/usr/share/wordlists/rockyou.txt hash_to_crack.txt
+```
+
+**Lưu ý:** Trước khi bẻ khóa, bạn cần xác định định dạng hash trong tệp của mình. Để nhận diện định dạng hash, bạn có thể sử dụng công cụ **[hash-id.py](https://gitlab.com/kalilinux/packages/hash-identifier/-/raw/kali/master/hash-id.py)**.
+
+---
+
+### **Bẻ khóa dựa trên định dạng cụ thể**
+Nếu biết trước định dạng của hash, bạn có thể chỉ định định dạng để cải thiện tốc độ bẻ khóa:
+```bash
+john --format=[định dạng hash] --wordlist=/usr/share/wordlists/rockyou.txt hash_to_crack.txt
+```
+
+Ví dụ, để bẻ khóa định dạng MD5:
+```bash
+john --format=raw-md5 --wordlist=/usr/share/wordlists/rockyou.txt hash_to_crack.txt
+```
+
+---
+
+### **Chế độ Single Crack Mode**
+Chế độ này cố gắng bẻ khóa mật khẩu dựa trên thông tin từ chính tệp hash (từ các thông tin như tên người dùng hoặc các trường liên quan).
+
+```bash
+john --single --format=raw-sha256 hashes.txt
+```
+
+---
+
+### **Custom Rules**
+John the Ripper hỗ trợ các quy tắc tùy chỉnh (custom rules), cho phép bạn tạo ra các biến thể của mật khẩu trong danh sách từ (wordlist):
+
+```bash
+john --wordlist=/usr/share/wordlists/rockyou.txt --rule=PoloPassword hash_to_crack.txt
+```
+
+---
+
+### **Cracking Mật khẩu Bảo vệ Tệp ZIP**
+John cũng có khả năng bẻ khóa các tệp ZIP được bảo vệ bằng mật khẩu. Sử dụng **zip2john** để trích xuất hash từ tệp ZIP:
+
+```bash
+zip2john zipfile.zip > zip_hash.txt
+john --wordlist=/usr/share/wordlists/rockyou.txt zip_hash.txt
+```
+
+---
+
+### **Cracking Mật khẩu Bảo vệ Tệp RAR**
+Tương tự như với tệp ZIP, bạn có thể bẻ khóa mật khẩu bảo vệ tệp RAR với **rar2john**:
+
+```bash
+rar2john rarfile.rar > rar_hash.txt
+john --wordlist=/usr/share/wordlists/rockyou.txt rar_hash.txt
+```
+
+---
+
+### **Cracking SSH Private Keys với John**
+John có thể bẻ khóa khóa riêng tư SSH (id_rsa). Đầu tiên, trích xuất hash từ tệp khóa riêng tư:
+
+```bash
+ssh2john id_rsa > id_rsa_hash.txt
+john --wordlist=/usr/share/wordlists/rockyou.txt id_rsa_hash.txt
+```
+
+
+## Hash-id.py
+
+Để nhận dạng định dạng của hash trước khi sử dụng John, bạn có thể sử dụng **hash-id.py**. Đây là một công cụ mạnh mẽ để xác định loại hash và giúp bạn lựa chọn đúng định dạng khi bẻ khóa với John.
+
+Cài đặt hash-id.py:
+```bash
+wget https://gitlab.com/kalilinux/packages/hash-identifier/-/raw/kali/master/hash-id.py
+chmod +x hash-id.py
+```
+
+Sử dụng hash-id.py:
+```bash
+./hash-id.py hash_to_identify
+```
+
+
+## Unshadowing
+
+Nếu bạn có quyền truy cập vào hệ thống Linux, bạn có thể sử dụng **unshadow** để hợp nhất nội dung của các tệp **/etc/passwd** và **/etc/shadow** để tạo ra tệp hash có thể sử dụng để bẻ khóa mật khẩu của người dùng.
+
+```bash
+unshadow /etc/passwd /etc/shadow > unshadowed_hashes.txt
+john unshadowed_hashes.txt
+```
+
