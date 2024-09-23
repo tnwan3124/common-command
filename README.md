@@ -14,7 +14,9 @@
 | [**sqlite3**](#sqlite3) | Tương tác với cơ sở dữ liệu SQLite | `.tables` (hiển thị các bảng), `.schema` (xem cấu trúc bảng) | `sqlite3 mydb.db` (Mở cơ sở dữ liệu SQLite có tên mydb.db) |
 | [**LinEnum**](#linenum) | Công cụ kiểm tra quyền và cấu hình bảo mật trên hệ thống Linux | Không có cờ đặc biệt, chạy với quyền root để có kết quả đầy đủ | `./LinEnum.sh` (Chạy script LinEnum để thu thập thông tin hệ thống) |
 | [**Hydra**](#hydra) | Công cụ brute-force dùng để tấn công mật khẩu dịch vụ từ xa | `-l` (tên người dùng), `-P` (wordlist mật khẩu), `-t` (số luồng), `-s` (cổng) | `hydra -l admin -P passwords.txt ssh://10.10.10.10` (Brute-force dịch vụ SSH với người dùng "admin" và wordlist mật khẩu) |
-| [**John**](#John) |  |  |  |
+| [**John**](#John) | Công cụ crack mật khẩu qua hash | `--wordlist` (đường dẫn đến wordlist), `--format` (định dạng hash), `--rules` (sử dụng quy tắc) | `john --wordlist=/usr/share/wordlists/rockyou.txt hash_to_crack.txt` (Bẻ khóa hash với wordlist) |
+| [**Hash-id.py**](#hash-idpy) | Nhận diện loại hash | Không có cờ đặc biệt | `./hash-id.py hash_to_identify` (Nhận diện loại hash từ chuỗi hash) |
+| [**Unshadowing**](#unshadowing) | Kết hợp /etc/passwd và /etc/shadow để tạo tệp hash | Không có cờ đặc biệt | `unshadow /etc/passwd /etc/shadow > unshadowed_hashes.txt` (Kết hợp và tạo tệp hash để bẻ khóa mật khẩu) |
 
 ## chmod
     Mục đích: Đặt quyền truy cập cho file/thư mục (ai được đọc/ghi/thực thi).
